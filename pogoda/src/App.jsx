@@ -4,9 +4,18 @@ import CurrentWeather from './components/CurrentWeather'
 import HourlyWeatherItem from './components/HourlyWeatherItem'
 
 const App = () => {
-  return (
+  const getWeatherDetails = async (API_URL) => {
+    try{
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+    return (
     <div className="container">
-      <SearchSection />
+      <SearchSection getWeatherDetails={getWeatherDetails} />
       <div className="weather-section">
         <CurrentWeather />
         <div className="hourly-forecast">
