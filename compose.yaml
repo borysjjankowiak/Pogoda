@@ -1,0 +1,7 @@
+services:
+  pogoda:
+    build: 
+      context: pogoda
+    container_name: pogoda_app
+    ports:
+        - "80:80"
