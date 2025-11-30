@@ -5,7 +5,7 @@ const CurrentWeather = () => {
       <img src="icons/rainy.svg" alt="" className="weather-icon" />
 
       <h2 className="temperature">
-        21<span>°C</span>
+        22<span>°C</span>
       </h2>
 
       <p className="description">Deszczowo</p>
