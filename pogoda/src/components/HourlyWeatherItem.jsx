@@ -1,11 +1,16 @@
-const HourlyWeatherItem = () => {
+const HourlyWeatherItem = ({ dateObj, tempC, iconPath }) => {
+  const formattedDate = dateObj.toLocaleDateString("pl-PL", {
+    day: "2-digit",
+    month: "2-digit",
+  });
+
   return (
     <li className="weather-item">
-              <p className="description">29.11</p>
-              <img src="icons/rainy.svg" alt="" className="weather-icon" />
-              <p className="temperature">18°C</p>
-     </li>
-  )
-}
+      <p className="description">{formattedDate}</p>
+      <img src={iconPath} alt="" className="weather-icon" />
+      <p className="temperature">{tempC}°C</p>
+    </li>
+  );
+};
 
-export default HourlyWeatherItem
+export default HourlyWeatherItem;

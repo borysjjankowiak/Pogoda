@@ -4,33 +4,22 @@ const getWeatherIcon = (main, iconCode) => {
   switch (main) {
     case "Clear":
       return isNight ? "icons/clear-night.svg" : "icons/clear-day.svg";
-
     case "Clouds":
       return isNight ? "icons/cloudy-night.svg" : "icons/cloudy-day.svg";
-
     case "Rain":
       return isNight ? "icons/night-rain.svg" : "icons/day-rain.svg";
-
     case "Drizzle":
       return isNight ? "icons/night-drizzle.svg" : "icons/day-drizzle.svg";
-
     case "Thunderstorm":
-      return isNight
-        ? "icons/thunderstorms-night.svg"
-        : "icons/thunderstorms-day.svg";
-
+      return isNight ? "icons/thunderstorms-night.svg" : "icons/thunderstorms-day.svg";
     case "Snow":
       return isNight ? "icons/night-snow.svg" : "icons/day-snow.svg";
-
     case "Mist":
       return "icons/mist.svg";
-
     case "Fog":
       return isNight ? "icons/fog-night.svg" : "icons/fog-day.svg";
-
     case "Haze":
       return isNight ? "icons/haze-night.svg" : "icons/haze-day.svg";
-
     default:
       return isNight ? "icons/cloudy-night.svg" : "icons/cloudy-day.svg";
   }

@@ -147,14 +147,16 @@ body {
 }
 .hourly-forecast .weather-list{
   display: flex;
+  justify-content: center;
   list-style: none;
   gap: 30px;
   overflow-x: auto;
   scrollbar-width: thin;
-  padding-bottom: 15px;
+  padding: 0 25px 15px 25px;
   margin-bottom: -15px;
   scrollbar-color: transparent transparent;
 }
+
 .hourly-forecast:hover .weather-list {
   scrollbar-color: #ffffff transparent;
 }
