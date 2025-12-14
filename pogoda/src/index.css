@@ -128,7 +128,9 @@ body {
   gap: 8px;
   color: #fff;
 }
-
+.szczegoly-item h5 {
+  white-space: nowrap; 
+}
 
 .hourly-forecast .weather-item .weather-icon{
   width: 28px;
