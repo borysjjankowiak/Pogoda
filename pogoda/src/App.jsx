@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import { cycleUnit } from "./store/unitSlice";
+import { toggleFavorite } from "./store/favoritesSlice";
 
 import SearchSection from "./components/SearchSection";
 import CurrentWeather from "./components/CurrentWeather";
@@ -13,9 +15,10 @@ const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const App = () => {
   const dispatch = useDispatch();
   const unit = useSelector((state) => state.unit.unit);
+  const favorites = useSelector((state) => state.favorites.cities);
 
   const [weatherData, setWeatherData] = useState(null);
-  const [forecastDays, setForecastDays] = useState([]); // teraz trzyma tempK
+  const [forecastDays, setForecastDays] = useState([]); // trzymamy tempK
   const [error, setError] = useState(null);
 
   const [featuredWeatherByCity, setFeaturedWeatherByCity] = useState({});
@@ -39,7 +42,7 @@ const App = () => {
     "icons/mist.svg",
   ];
 
-  // ✅ prognoza operuje na Kelvinach (1°C różnicy = 1K różnicy)
+  // ✅ prognoza losowa operuje na Kelvinach (1°C różnicy = 1K różnicy)
   const generateRandomForecast = (baseTempK, daysCount = 6) => {
     const start = new Date();
     start.setHours(12, 0, 0, 0);
@@ -49,7 +52,7 @@ const App = () => {
     return Array.from({ length: daysCount }, (_, i) => {
       const d = new Date(start);
       d.setDate(d.getDate() + (i + 1));
-      tempK = tempK + randomInt(-1, 1); // +/- 1K
+      tempK = tempK + randomInt(-1, 1);
 
       return {
         dateObj: d,
@@ -61,6 +64,7 @@ const App = () => {
 
   const applyCityWeather = (data) => {
     setWeatherData(data);
+
     const baseTempK = Number(data?.main?.temp ?? 273.15);
     setForecastDays(generateRandomForecast(baseTempK, 6));
   };
@@ -70,7 +74,9 @@ const App = () => {
       setError(null);
 
       const response = await fetch(API_URL);
-      if (!response.ok) throw new Error(`Nie znaleziono miasta: ${city}`);
+      if (!response.ok) {
+        throw new Error(`Nie znaleziono miasta: ${city}`);
+      }
 
       const data = await response.json();
       applyCityWeather(data);
@@ -102,14 +108,17 @@ const App = () => {
           if (r.status === "fulfilled") next[r.value.city] = r.value.data;
         }
         setFeaturedWeatherByCity(next);
-      } catch {}
+      } catch {
+        // opcjonalnie
+      }
     };
 
     loadFeatured();
     return () => {
       isCancelled = true;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSelectFeaturedCity = (city) => {
     setError(null);
@@ -129,16 +138,28 @@ const App = () => {
     setError(null);
   };
 
+  // ✅ ulubione (dla serduszka)
+  const currentCity = (weatherData?.name ?? "").trim();
+  const isFav =
+    !!currentCity &&
+    favorites.some((c) => c.trim().toLowerCase() === currentCity.toLowerCase());
+
   return (
     <div className="app-shell">
+      {/* ===== MENU NAD KAFELKIEM ===== */}
       <div className="top-menu">
         {weatherData && (
-          <button className="menu-btn" type="button" onClick={handleBackToHome} aria-label="Wróć" title="Wróć">
+          <button
+            className="menu-btn"
+            type="button"
+            onClick={handleBackToHome}
+            aria-label="Wróć"
+            title="Wróć"
+          >
             <span className="material-symbols-rounded">arrow_back</span>
           </button>
         )}
 
-        {/* ✅ DRUGI PRZYCISK: ZMIANA JEDNOSTEK */}
         <button
           className="menu-btn"
           type="button"
@@ -149,12 +170,19 @@ const App = () => {
           {unit === "C" ? "°C" : unit === "F" ? "°F" : "K"}
         </button>
 
-        {/* placeholder */}
-        <button className="menu-btn" type="button" disabled aria-label="Wkrótce" title="Wkrótce">
-          <span className="material-symbols-rounded">more_horiz</span>
+        <button
+          className={`menu-btn menu-heart ${isFav ? "is-active" : ""}`}
+          type="button"
+          disabled={!currentCity}
+          onClick={() => dispatch(toggleFavorite(currentCity))}
+          aria-label="Dodaj/usuń z ulubionych"
+          title={isFav ? "Usuń z ulubionych" : "Dodaj do ulubionych"}
+        >
+          <span className="material-symbols-rounded">favorite</span>
         </button>
       </div>
 
+      {/* ===== KAFEL ===== */}
       <div className="container">
         <SearchSection getWeatherDetails={getWeatherDetails} />
 
@@ -167,7 +195,9 @@ const App = () => {
         )}
 
         {error && (
-          <p style={{ color: "#ffb3b3", textAlign: "center", paddingBottom: "10px" }}>{error}</p>
+          <p style={{ color: "#ffb3b3", textAlign: "center", paddingBottom: "10px" }}>
+            {error}
+          </p>
         )}
 
         {weatherData && (
@@ -177,7 +207,12 @@ const App = () => {
             <div className="hourly-forecast">
               <ul className="weather-list">
                 {forecastDays.map((d, idx) => (
-                  <HourlyWeatherItem key={idx} dateObj={d.dateObj} tempK={d.tempK} iconPath={d.iconPath} />
+                  <HourlyWeatherItem
+                    key={idx}
+                    dateObj={d.dateObj}
+                    tempK={d.tempK}
+                    iconPath={d.iconPath}
+                  />
                 ))}
               </ul>
             </div>

@@ -32,18 +32,21 @@ body {
   align-items: center;
   gap: 10px;
   padding: 25px;
+  position: relative;
+  z-index: 20;
 }
 .search-section .search-form{
   height: 54px;
   width: 100%;
   position: relative;
 }
-.search-section .search-form span{
+.search-section .search-form .search-icon{
   color: #818181;
   position: absolute;
   top: 50%;
-  transform: translateY(-50%) ;
+  transform: translateY(-50%);
   left: 16px;
+  pointer-events: none;
 }
 .search-section .search-input{
   width: 100%;
@@ -270,3 +273,76 @@ body {
   cursor: default;
 }
 
+/* ===== Serduszko w top-menu ===== */
+.menu-heart .material-symbols-rounded {
+  font-variation-settings: "FILL" 0, "wght" 500, "GRAD" 0, "opsz" 24;
+}
+
+.menu-heart.is-active .material-symbols-rounded {
+  font-variation-settings: "FILL" 1, "wght" 600, "GRAD" 0, "opsz" 24;
+  color: #ff4d6d;
+}
+
+.menu-heart:disabled {
+  opacity: 0.45;
+}
+
+/* ===== Sugestie ulubionych pod inputem ===== */
+.search-section .search-form {
+  position: relative;
+}
+
+.suggestions {
+   position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 999;
+
+  display: flex;              /* ✅ */
+  flex-direction: column;     /* ✅ */
+  padding: 6px 0;             /* ✅ */
+
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.suggestion-item {
+    width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  display: flex;              /* ✅ */
+  align-items: center;        /* ✅ */
+  justify-content: flex-start;/* ✅ */
+
+  padding: 10px 12px;
+  text-align: left;
+  line-height: 1.2;           /* ✅ */
+  color: #2b2b2b;
+}
+
+.suggestion-item:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.suggestion-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.suggestion-heart {
+  font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
+  color: #ff4d6d;
+  font-size: 18px;
+}
+
+.suggestion-empty {
+  padding: 10px 12px;
+  color: #555;
+  font-size: 0.9rem;
+}
