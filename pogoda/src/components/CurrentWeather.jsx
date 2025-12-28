@@ -1,10 +1,12 @@
+import { useSelector } from "react-redux";
 import { getWeatherIcon } from "../utils/weatherIcons";
-
+import { formatTemp } from "../utils/temperature";
 
 const CurrentWeather = ({ weather }) => {
+  const unit = useSelector((state) => state.unit.unit);
+
   if (!weather) return null;
 
-  const tempC = Math.round(weather.main.temp - 273.15);
   const main = weather.weather?.[0]?.main;
   const description = weather.weather?.[0]?.description ?? "";
   const iconCode = weather.weather?.[0]?.icon;
@@ -13,6 +15,8 @@ const CurrentWeather = ({ weather }) => {
   const windDeg = weather.wind?.deg;
   const clouds = weather.clouds?.all;
   const humidity = weather.main?.humidity;
+
+  const { value, symbol } = formatTemp(weather.main?.temp, unit);
 
   return (
     <div className="current-weather">
@@ -25,8 +29,8 @@ const CurrentWeather = ({ weather }) => {
       />
 
       <h2 className="temperature">
-        {tempC}
-        <span>°C</span>
+        {value}
+        <span>{symbol}</span>
       </h2>
 
       <p className="description">{description}</p>
@@ -35,25 +39,25 @@ const CurrentWeather = ({ weather }) => {
         <div className="szczegoly-item">
           <span className="material-symbols-rounded">air</span>
           <p>Prędkość wiatru</p>
-          <h5>{Math.round(windSpeed)} <span>m/s</span></h5>
+          <h5>{windSpeed != null ? Math.round(windSpeed) : "-"} <span>m/s</span></h5>
         </div>
 
         <div className="szczegoly-item">
           <span className="material-symbols-outlined">explore</span>
           <p>Kierunek wiatru</p>
-          <h5>{windDeg}°</h5>
+          <h5>{windDeg != null ? `${windDeg}°` : "-"}</h5>
         </div>
 
         <div className="szczegoly-item">
           <span className="material-symbols-outlined">cloud</span>
           <p>Zachmurzenie</p>
-          <h5>{clouds}%</h5>
+          <h5>{clouds != null ? `${clouds}%` : "-"}</h5>
         </div>
 
         <div className="szczegoly-item">
           <span className="material-symbols-rounded">water_drop</span>
           <p>Wilgotność</p>
-          <h5>{humidity}%</h5>
+          <h5>{humidity != null ? `${humidity}%` : "-"}</h5>
         </div>
       </div>
     </div>

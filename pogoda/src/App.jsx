@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { cycleUnit } from "./store/unitSlice";
+
 import SearchSection from "./components/SearchSection";
 import CurrentWeather from "./components/CurrentWeather";
 import HourlyWeatherItem from "./components/HourlyWeatherItem";
 import FeaturedCities from "./components/FeaturedCities";
 
-const kelvinToC = (k) => Math.round(k - 273.15);
-
 const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const App = () => {
+  const dispatch = useDispatch();
+  const unit = useSelector((state) => state.unit.unit);
+
   const [weatherData, setWeatherData] = useState(null);
-  const [forecastDays, setForecastDays] = useState([]); // ✅ losowe małe kafelki
+  const [forecastDays, setForecastDays] = useState([]); // teraz trzyma tempK
   const [error, setError] = useState(null);
 
   const [featuredWeatherByCity, setFeaturedWeatherByCity] = useState({});
@@ -21,9 +25,7 @@ const App = () => {
   const FEATURED_CITIES = ["Wrocław", "Warszawa", "Dubaj", "Moskwa", "Reykjavík", "Waszyngton"];
 
   const buildWeatherUrl = (city) =>
-    `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
-      city
-    )}&appid=${API_KEY}&lang=pl`;
+    `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&lang=pl`;
 
   const DAY_ICONS = [
     "icons/clear-day.svg",
@@ -37,20 +39,21 @@ const App = () => {
     "icons/mist.svg",
   ];
 
-  const generateRandomForecast = (baseTempC, daysCount = 6) => {
+  // ✅ prognoza operuje na Kelvinach (1°C różnicy = 1K różnicy)
+  const generateRandomForecast = (baseTempK, daysCount = 6) => {
     const start = new Date();
     start.setHours(12, 0, 0, 0);
 
-    let temp = baseTempC;
+    let tempK = baseTempK;
 
     return Array.from({ length: daysCount }, (_, i) => {
       const d = new Date(start);
       d.setDate(d.getDate() + (i + 1));
-      temp = temp + randomInt(-1, 1);
+      tempK = tempK + randomInt(-1, 1); // +/- 1K
 
       return {
         dateObj: d,
-        tempC: temp,
+        tempK,
         iconPath: pickRandom(DAY_ICONS),
       };
     });
@@ -58,9 +61,8 @@ const App = () => {
 
   const applyCityWeather = (data) => {
     setWeatherData(data);
-
-    const baseTempC = kelvinToC(data?.main?.temp ?? 273.15);
-    setForecastDays(generateRandomForecast(baseTempC, 6));
+    const baseTempK = Number(data?.main?.temp ?? 273.15);
+    setForecastDays(generateRandomForecast(baseTempK, 6));
   };
 
   const getWeatherDetails = async (API_URL, city) => {
@@ -68,9 +70,7 @@ const App = () => {
       setError(null);
 
       const response = await fetch(API_URL);
-      if (!response.ok) {
-        throw new Error(`Nie znaleziono miasta: ${city}`);
-      }
+      if (!response.ok) throw new Error(`Nie znaleziono miasta: ${city}`);
 
       const data = await response.json();
       applyCityWeather(data);
@@ -102,19 +102,17 @@ const App = () => {
           if (r.status === "fulfilled") next[r.value.city] = r.value.data;
         }
         setFeaturedWeatherByCity(next);
-      } catch {
-      }
+      } catch {}
     };
 
     loadFeatured();
     return () => {
       isCancelled = true;
     };
-  }, []); 
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSelectFeaturedCity = (city) => {
     setError(null);
-
 
     const cached = featuredWeatherByCity[city];
     if (cached) {
@@ -132,45 +130,60 @@ const App = () => {
   };
 
   return (
-    <div className="container">
-      <SearchSection getWeatherDetails={getWeatherDetails} />
-
-      {!weatherData && (
-        <FeaturedCities
-          cities={FEATURED_CITIES}
-          weatherByCity={featuredWeatherByCity}
-          onSelectCity={handleSelectFeaturedCity}
-        />
-      )}
-
-      {error && (
-        <p style={{ color: "#ffb3b3", textAlign: "center", paddingBottom: "10px" }}>
-          {error}
-        </p>
-      )}
-
-      {weatherData && (
-        <div className="weather-section">
-          <button className="back-button" type="button" onClick={handleBackToHome}>
-            ← Wróć
+    <div className="app-shell">
+      <div className="top-menu">
+        {weatherData && (
+          <button className="menu-btn" type="button" onClick={handleBackToHome} aria-label="Wróć" title="Wróć">
+            <span className="material-symbols-rounded">arrow_back</span>
           </button>
+        )}
 
-          <CurrentWeather weather={weatherData} />
+        {/* ✅ DRUGI PRZYCISK: ZMIANA JEDNOSTEK */}
+        <button
+          className="menu-btn"
+          type="button"
+          onClick={() => dispatch(cycleUnit())}
+          aria-label="Zmień jednostkę temperatury"
+          title="Zmień jednostkę temperatury"
+        >
+          {unit === "C" ? "°C" : unit === "F" ? "°F" : "K"}
+        </button>
 
-          <div className="hourly-forecast">
-            <ul className="weather-list">
-              {forecastDays.map((d, idx) => (
-                <HourlyWeatherItem
-                  key={idx}
-                  dateObj={d.dateObj}
-                  tempC={d.tempC}
-                  iconPath={d.iconPath}
-                />
-              ))}
-            </ul>
+        {/* placeholder */}
+        <button className="menu-btn" type="button" disabled aria-label="Wkrótce" title="Wkrótce">
+          <span className="material-symbols-rounded">more_horiz</span>
+        </button>
+      </div>
+
+      <div className="container">
+        <SearchSection getWeatherDetails={getWeatherDetails} />
+
+        {!weatherData && (
+          <FeaturedCities
+            cities={FEATURED_CITIES}
+            weatherByCity={featuredWeatherByCity}
+            onSelectCity={handleSelectFeaturedCity}
+          />
+        )}
+
+        {error && (
+          <p style={{ color: "#ffb3b3", textAlign: "center", paddingBottom: "10px" }}>{error}</p>
+        )}
+
+        {weatherData && (
+          <div className="weather-section">
+            <CurrentWeather weather={weatherData} />
+
+            <div className="hourly-forecast">
+              <ul className="weather-list">
+                {forecastDays.map((d, idx) => (
+                  <HourlyWeatherItem key={idx} dateObj={d.dateObj} tempK={d.tempK} iconPath={d.iconPath} />
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

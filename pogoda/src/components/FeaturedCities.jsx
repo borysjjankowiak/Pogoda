@@ -1,8 +1,10 @@
+import { useSelector } from "react-redux";
 import { getWeatherIcon } from "../utils/weatherIcons";
-
-const kelvinToC = (k) => Math.round(k - 273.15);
+import { formatTemp } from "../utils/temperature";
 
 const FeaturedCities = ({ cities, weatherByCity, onSelectCity }) => {
+  const unit = useSelector((state) => state.unit.unit);
+
   return (
     <div className="featured">
       <h3 className="featured-title">Popularne miasta</h3>
@@ -10,7 +12,6 @@ const FeaturedCities = ({ cities, weatherByCity, onSelectCity }) => {
       <div className="featured-grid">
         {cities.map((city) => {
           const data = weatherByCity[city];
-
 
           if (!data) {
             return (
@@ -24,7 +25,8 @@ const FeaturedCities = ({ cities, weatherByCity, onSelectCity }) => {
           const main = data.weather?.[0]?.main;
           const iconCode = data.weather?.[0]?.icon;
           const description = data.weather?.[0]?.description ?? "";
-          const tempC = kelvinToC(data.main?.temp ?? 273.15);
+
+          const { value, symbol } = formatTemp(data.main?.temp, unit);
 
           return (
             <button
@@ -36,13 +38,13 @@ const FeaturedCities = ({ cities, weatherByCity, onSelectCity }) => {
             >
               <div className="featured-top">
                 <div className="featured-city">{data.name ?? city}</div>
-                <img
-                  className="featured-icon"
-                  src={getWeatherIcon(main, iconCode)}
-                  alt={description}
-                />
+                <img className="featured-icon" src={getWeatherIcon(main, iconCode)} alt={description} />
               </div>
-              <div className="featured-temp">{tempC}°C</div>
+
+              <div className="featured-temp">
+                {value}{symbol}
+              </div>
+
               <div className="featured-sub">{description}</div>
             </button>
           );
