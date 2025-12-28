@@ -12,6 +12,53 @@ import FeaturedCities from "./components/FeaturedCities";
 const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
+const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+
+const FEATURED_CITIES = [
+  "Wrocław",
+  "Warszawa",
+  "Dubaj",
+  "Moskwa",
+  "Reykjavík",
+  "Waszyngton",
+];
+
+const DAY_ICONS = [
+  "icons/clear-day.svg",
+  "icons/cloudy-day.svg",
+  "icons/day-rain.svg",
+  "icons/day-drizzle.svg",
+  "icons/day-snow.svg",
+  "icons/fog-day.svg",
+  "icons/haze-day.svg",
+  "icons/thunderstorms-day.svg",
+  "icons/mist.svg",
+];
+
+const buildWeatherUrl = (city) =>
+  `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+    city
+  )}&appid=${API_KEY}&lang=pl`;
+
+const generateRandomForecast = (baseTempK, daysCount = 6) => {
+  const start = new Date();
+  start.setHours(12, 0, 0, 0);
+
+  let tempK = baseTempK;
+
+  return Array.from({ length: daysCount }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(d.getDate() + (i + 1));
+    tempK = tempK + randomInt(-1, 1);
+
+    return {
+      dateObj: d,
+      tempK,
+      iconPath: pickRandom(DAY_ICONS),
+    };
+  });
+};
+
 const App = () => {
   const dispatch = useDispatch();
   const unit = useSelector((state) => state.unit.unit);
@@ -22,44 +69,6 @@ const App = () => {
   const [error, setError] = useState(null);
 
   const [featuredWeatherByCity, setFeaturedWeatherByCity] = useState({});
-
-  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
-
-  const FEATURED_CITIES = ["Wrocław", "Warszawa", "Dubaj", "Moskwa", "Reykjavík", "Waszyngton"];
-
-  const buildWeatherUrl = (city) =>
-    `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&lang=pl`;
-
-  const DAY_ICONS = [
-    "icons/clear-day.svg",
-    "icons/cloudy-day.svg",
-    "icons/day-rain.svg",
-    "icons/day-drizzle.svg",
-    "icons/day-snow.svg",
-    "icons/fog-day.svg",
-    "icons/haze-day.svg",
-    "icons/thunderstorms-day.svg",
-    "icons/mist.svg",
-  ];
-
-  const generateRandomForecast = (baseTempK, daysCount = 6) => {
-    const start = new Date();
-    start.setHours(12, 0, 0, 0);
-
-    let tempK = baseTempK;
-
-    return Array.from({ length: daysCount }, (_, i) => {
-      const d = new Date(start);
-      d.setDate(d.getDate() + (i + 1));
-      tempK = tempK + randomInt(-1, 1);
-
-      return {
-        dateObj: d,
-        tempK,
-        iconPath: pickRandom(DAY_ICONS),
-      };
-    });
-  };
 
   const applyCityWeather = (data) => {
     setWeatherData(data);
@@ -80,30 +89,31 @@ const App = () => {
       const data = await response.json();
       applyCityWeather(data);
     } catch (err) {
-      setError(err.message);
+      setError(err?.message ?? "Wystąpił błąd.");
       setWeatherData(null);
       setForecastDays([]);
     }
   };
-const getWeatherByCoords = async (lat, lon) => {
-  try {
-    setError(null);
 
-    const API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&lang=pl`;
-    const response = await fetch(API_URL);
+  const getWeatherByCoords = async (lat, lon) => {
+    try {
+      setError(null);
 
-    if (!response.ok) {
-      throw new Error("Nie udało się pobrać pogody dla lokalizacji.");
+      const API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&lang=pl`;
+      const response = await fetch(API_URL);
+
+      if (!response.ok) {
+        throw new Error("Nie udało się pobrać pogody dla lokalizacji.");
+      }
+
+      const data = await response.json();
+      applyCityWeather(data);
+    } catch (err) {
+      setError(err?.message ?? "Wystąpił błąd.");
+      setWeatherData(null);
+      setForecastDays([]);
     }
-
-    const data = await response.json();
-    applyCityWeather(data);
-  } catch (err) {
-    setError(err.message);
-    setWeatherData(null);
-    setForecastDays([]);
-  }
-};
+  };
 
   useEffect(() => {
     let isCancelled = false;
@@ -126,7 +136,11 @@ const getWeatherByCoords = async (lat, lon) => {
           if (r.status === "fulfilled") next[r.value.city] = r.value.data;
         }
         setFeaturedWeatherByCity(next);
-      } catch {
+      } catch (err) {
+        // ważne: blok nie może być pusty (no-empty)
+        if (import.meta.env.DEV) {
+          console.warn("Nie udało się pobrać danych featured", err);
+        }
       }
     };
 
@@ -197,11 +211,10 @@ const getWeatherByCoords = async (lat, lon) => {
       </div>
 
       <div className="container">
-      <SearchSection
-        getWeatherDetails={getWeatherDetails}
-        getWeatherByCoords={getWeatherByCoords}
-      />
-
+        <SearchSection
+          getWeatherDetails={getWeatherDetails}
+          getWeatherByCoords={getWeatherByCoords}
+        />
 
         {!weatherData && (
           <FeaturedCities

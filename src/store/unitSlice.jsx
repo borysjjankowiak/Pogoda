@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const UNITS = ["C", "K", "F"]; // Celsius, Kelvin, Fahrenheit
+const UNITS = ["C", "K", "F"];
 
 const unitSlice = createSlice({
   name: "unit",
