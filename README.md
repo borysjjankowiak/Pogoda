@@ -1,16 +1,65 @@
-# React + Vite
+# Programowanie Front-end — Projekt semestralny (aplikacja Pogoda)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Repozytorium zawiera aplikację pogodową zbudowaną w technologii **Vite + React**.
+Aplikacja zawiera wymagania konieczne, dodatkowe oraz kilka innych funkcji. 
 
-Currently, two official plugins are available:
+Projekt korzysta z OpenWeather API do pobierania rzeczywistych danych pogodowych.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Funkcjonalności
 
-## React Compiler
+Aplikacja realizuje m.in.:
+-ekran główny z listą przykładowych popularnych miejscowości
+-szczegółowy podgląd pogody dla wybranej/wyszukanej miejscowości
+    --bieżąca temperatura
+    --warunki pogodowe w postaci ikony (dzień/noc)
+    --wiatr (prędkość+kierunek)
+    --zachmurzenie
+    --wilgotność
+-wyszukiwanie miejscowości po nazwie
+-możliwość pobrania miejscowości na podstawie geolokalizacji przeglądarki (działa na Chrome po udzieleniu zgód)
+-globalna zmiana jednostek temperastury (C/F/K)
+-ulubione miejscowości (serduszko)
+    --dodawanie i usuwanie z listy
+    --podpowiedzi z ulubionych w polu wyszukiwania
+-zapis ustawień w local storage
+    --wybrana jednostka temperatury
+    --lista ulubionych miejscowości
+>UWAGA: Temperatura na przyszłe dni jest "losowa" na podstawie obecnej temperatury, wynika to z ograniczeń darmowego wariantu API OpenWeather
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Jak uruchomić projekt
 
-## Expanding the ESLint configuration
+W pierwszej kolejności należy użyć narzędzia NVM do wybrania odpowiedniej wersji Node.js:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```shell
+nvm use
+```
+
+Jeżeli narzędzie zwróci błąd o tym, że obecnie nie jest zainstalowana żądana wersja Node'a, wówczas należy użyć komendy:
+```shell
+nvm install 20.18.0
+nvm use
+```
+
+Następnie należy zainstalować biblioteki wymagane do uruchomienia projektu:
+```shell
+npm install
+```
+
+Potem projekt można uruchomić w przeglądarce używając polecenia:
+```shell
+npm run dev
+```
+
+## Lista zainstalowanych bibliotek / narzędzi
+
+>React
+>React Redux + ReduxJS Toolkit,
+>Vite,
+>ESLint
+
+## Struktura katalogów
+
+>src/components - katalog zawierający komponenty aplikacji (widoki+UI)
+>src/store - konfiguracja Redux store + slice’y 
+>src/utils - funkcje pomocnicze 
+>public/icons - ikony pogodowe wykorzystywane w aplikacji
