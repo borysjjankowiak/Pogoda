@@ -10,23 +10,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: Pogoda
+
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-    - name: Install dependencies
-      run: npm install
-      working-directory: pogoda
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Run lint
-      run: npm run lint
-      working-directory: pogoda
+      - name: Run lint
+        run: npm run lint --if-present
 
-    - name: Run build
-      run: npm run build
-      working-directory: pogoda
+      - name: Run build
+        run: npm run build
