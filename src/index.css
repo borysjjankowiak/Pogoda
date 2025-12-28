@@ -11,7 +11,7 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(#FFFF, #05516e);
+  background: linear-gradient(#fff, #05516e);
 }
 #root {
   width: 100%;
@@ -21,12 +21,15 @@ body {
   overflow: hidden;
   z-index: 1;
   margin: 0 auto;
-  max-width: 450px;
   border-radius: 10px;
   background-color: rgba(4, 15, 22, 0.3);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
-
+.error-text {
+  color: #fc7979;
+  text-align: center;
+  padding-bottom: 20px;
+}
 .search-section{
   display: flex;
   align-items: center;
@@ -72,14 +75,14 @@ body {
   flex-shrink: 0;
   background: rgba(255, 255, 255, 0.3);
   border: none;
-  color: #ffffff;
+  color: #fff;
   cursor: pointer;
 }
 .search-section .location-button:hover{
   background: rgba(255, 255, 255, 0.4);
 }
 .weather-section :where(h2, p){
-  color: #FFFF;
+  color: #fff;
 }
 .weather-section .current-weather{
   display: flex;
@@ -97,7 +100,7 @@ body {
   display: flex;
 }
 .current-weather h1{
-  color: #FFFF;
+  color: #FFF;
   font-weight: 300;
   font-size: 2rem;
 }
@@ -117,7 +120,7 @@ body {
   column-gap: 25px;
   row-gap: 15px;
   margin-top: 20px;
-  padding: 0 40px 0 40px;
+  padding: 0 40px;
 }
 .szczegoly p{
   font-size: 0.8rem;
@@ -144,7 +147,7 @@ body {
   gap: 5px;
 }
 .hourly-forecast{
-  padding: 20px 20px;
+  padding: 20px;
 }
 .hourly-forecast .weather-list{
   display: flex;
@@ -159,7 +162,7 @@ body {
   scrollbar-color: transparent transparent;
 }
 .hourly-forecast:hover .weather-list {
-  scrollbar-color: #ffffff transparent;
+  scrollbar-color: #fff transparent;
 }
 .featured {
   padding: 0 25px 25px 25px;
@@ -199,19 +202,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 .featured-city {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 .featured-icon {
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
 }
 .featured-temp {
-  font-size: 1.3rem;
-  margin-top: 6px;
+  font-size: 1.5rem;
+  margin: 2px 0;
   font-weight: 600;
 }
 .featured-sub {
@@ -247,7 +250,7 @@ body {
   background-color: rgba(4, 15, 22, 0.6);
 }
 .menu-btn:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: default;
 }
 .menu-heart .material-symbols-rounded {
@@ -255,20 +258,16 @@ body {
 }
 .menu-heart.is-active .material-symbols-rounded {
   font-variation-settings: "FILL" 1, "wght" 600, "GRAD" 0, "opsz" 24;
-  color: #ff4d6d;
+  color: #a70303;
 }
 .menu-heart:disabled {
-  opacity: 0.45;
-}
-
-.search-section .search-form {
-  position: relative;
+  opacity: 0.5;
 }
 .suggestions {
-   position: absolute;
+  position: absolute;
   left: 0;
   right: 0;
-  top: calc(100% + 8px);
+  top: calc(100% + 5px);
   z-index: 999;
   display: flex;            
   flex-direction: column;   
@@ -279,7 +278,7 @@ body {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 .suggestion-item {
-    width: 100%;
+  width: 100%;
   border: 0;
   background: transparent;
   cursor: pointer;
@@ -297,12 +296,12 @@ body {
 .suggestion-left {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 .suggestion-heart {
   font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
-  color: #ff4d6d;
-  font-size: 18px;
+  color: #a70303;
+  font-size: 20px;
 }
 .suggestion-empty {
   padding: 10px 12px;

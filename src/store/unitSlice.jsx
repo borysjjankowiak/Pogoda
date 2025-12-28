@@ -1,13 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-
 const UNITS = ["C", "K", "F"];
-
 const unitSlice = createSlice({
   name: "unit",
   initialState: { unit: "C" },
   reducers: {
     setUnit: (state, action) => {
-      state.unit = action.payload;
+      const next = action.payload;
+      if (UNITS.includes(next)) state.unit = next;
     },
     cycleUnit: (state) => {
       const idx = UNITS.indexOf(state.unit);

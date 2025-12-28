@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import { DAY_ICON_LIST } from "./utils/weatherIcons";
 import { cycleUnit } from "./store/unitSlice";
 import { toggleFavorite } from "./store/favoritesSlice";
-
 import SearchSection from "./components/SearchSection";
 import CurrentWeather from "./components/CurrentWeather";
 import HourlyWeatherItem from "./components/HourlyWeatherItem";
@@ -14,31 +13,10 @@ const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
-const FEATURED_CITIES = [
-  "Wrocław",
-  "Warszawa",
-  "Dubaj",
-  "Moskwa",
-  "Reykjavík",
-  "Waszyngton",
-];
-
-const DAY_ICONS = [
-  "icons/clear-day.svg",
-  "icons/cloudy-day.svg",
-  "icons/day-rain.svg",
-  "icons/day-drizzle.svg",
-  "icons/day-snow.svg",
-  "icons/fog-day.svg",
-  "icons/haze-day.svg",
-  "icons/thunderstorms-day.svg",
-  "icons/mist.svg",
-];
+const FEATURED_CITIES = ["Wrocław","Warszawa","Dubaj","Moskwa","Reykjavík","Waszyngton"];
 
 const buildWeatherUrl = (city) =>
-  `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
-    city
-  )}&appid=${API_KEY}&lang=pl`;
+  `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&lang=pl`;
 
 const generateRandomForecast = (baseTempK, daysCount = 6) => {
   const start = new Date();
@@ -50,11 +28,10 @@ const generateRandomForecast = (baseTempK, daysCount = 6) => {
     const d = new Date(start);
     d.setDate(d.getDate() + (i + 1));
     tempK = tempK + randomInt(-1, 1);
-
     return {
       dateObj: d,
       tempK,
-      iconPath: pickRandom(DAY_ICONS),
+      iconPath: pickRandom(DAY_ICON_LIST),
     };
   });
 };
@@ -63,16 +40,12 @@ const App = () => {
   const dispatch = useDispatch();
   const unit = useSelector((state) => state.unit.unit);
   const favorites = useSelector((state) => state.favorites.cities);
-
   const [weatherData, setWeatherData] = useState(null);
-  const [forecastDays, setForecastDays] = useState([]); // trzymamy tempK
+  const [forecastDays, setForecastDays] = useState([]);
   const [error, setError] = useState(null);
-
   const [featuredWeatherByCity, setFeaturedWeatherByCity] = useState({});
-
   const applyCityWeather = (data) => {
     setWeatherData(data);
-
     const baseTempK = Number(data?.main?.temp ?? 273.15);
     setForecastDays(generateRandomForecast(baseTempK, 6));
   };
@@ -80,12 +53,10 @@ const App = () => {
   const getWeatherDetails = async (API_URL, city) => {
     try {
       setError(null);
-
       const response = await fetch(API_URL);
       if (!response.ok) {
         throw new Error(`Nie znaleziono miasta: ${city}`);
       }
-
       const data = await response.json();
       applyCityWeather(data);
     } catch (err) {
@@ -98,14 +69,11 @@ const App = () => {
   const getWeatherByCoords = async (lat, lon) => {
     try {
       setError(null);
-
       const API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&lang=pl`;
       const response = await fetch(API_URL);
-
       if (!response.ok) {
         throw new Error("Nie udało się pobrać pogody dla lokalizacji.");
       }
-
       const data = await response.json();
       applyCityWeather(data);
     } catch (err) {
@@ -117,7 +85,6 @@ const App = () => {
 
   useEffect(() => {
     let isCancelled = false;
-
     const loadFeatured = async () => {
       try {
         const results = await Promise.allSettled(
@@ -130,14 +97,12 @@ const App = () => {
         );
 
         if (isCancelled) return;
-
         const next = {};
         for (const r of results) {
           if (r.status === "fulfilled") next[r.value.city] = r.value.data;
         }
         setFeaturedWeatherByCity(next);
       } catch (err) {
-        // ważne: blok nie może być pusty (no-empty)
         if (import.meta.env.DEV) {
           console.warn("Nie udało się pobrać danych featured", err);
         }
@@ -152,7 +117,6 @@ const App = () => {
 
   const handleSelectFeaturedCity = (city) => {
     setError(null);
-
     const cached = featuredWeatherByCity[city];
     if (cached) {
       applyCityWeather(cached);
@@ -223,13 +187,7 @@ const App = () => {
             onSelectCity={handleSelectFeaturedCity}
           />
         )}
-
-        {error && (
-          <p style={{ color: "#ffb3b3", textAlign: "center", paddingBottom: "10px" }}>
-            {error}
-          </p>
-        )}
-
+        {error && <p className="error-text">{error}</p>}
         {weatherData && (
           <div className="weather-section">
             <CurrentWeather weather={weatherData} />

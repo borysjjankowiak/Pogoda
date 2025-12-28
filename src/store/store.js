@@ -13,12 +13,10 @@ export const store = configureStore({
   preloadedState,
 });
 
-let saveTimer = null;
+let saveTimer;
 store.subscribe(() => {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     savePersistedState(store.getState());
   }, 150);
 });
-
-export default store;

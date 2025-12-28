@@ -1,15 +1,17 @@
 import { useSelector } from "react-redux";
 import { getWeatherIcon } from "../utils/weatherIcons";
 import { formatTemp } from "../utils/temperature";
+import WeatherDetailItem from "./WeatherDetailItem";
 
 const CurrentWeather = ({ weather }) => {
   const unit = useSelector((state) => state.unit.unit);
 
   if (!weather) return null;
 
-  const main = weather.weather?.[0]?.main;
-  const description = weather.weather?.[0]?.description ?? "";
-  const iconCode = weather.weather?.[0]?.icon;
+  const w = weather.weather?.[0];
+  const main = w?.main;
+  const description = w?.description ?? "";
+  const iconCode = w?.icon;
 
   const windSpeed = weather.wind?.speed;
   const windDeg = weather.wind?.deg;
@@ -24,7 +26,7 @@ const CurrentWeather = ({ weather }) => {
 
       <img
         src={getWeatherIcon(main, iconCode)}
-        alt={description}
+        alt={description || `Ikona pogody: ${weather.name}`}
         className="weather-icon"
       />
 
@@ -36,29 +38,39 @@ const CurrentWeather = ({ weather }) => {
       <p className="description">{description}</p>
 
       <div className="szczegoly">
-        <div className="szczegoly-item">
-          <span className="material-symbols-rounded">air</span>
-          <p>Prędkość wiatru</p>
-          <h5>{windSpeed != null ? Math.round(windSpeed) : "-"} <span>m/s</span></h5>
-        </div>
+        <WeatherDetailItem
+          icon="air"
+          label="Prędkość wiatru"
+          value={
+            windSpeed != null ? (
+              <>
+                {Math.round(windSpeed)} <span>m/s</span>
+              </>
+            ) : (
+              "-"
+            )
+          }
+        />
 
-        <div className="szczegoly-item">
-          <span className="material-symbols-outlined">explore</span>
-          <p>Kierunek wiatru</p>
-          <h5>{windDeg != null ? `${windDeg}°` : "-"}</h5>
-        </div>
+        <WeatherDetailItem
+          iconClass="material-symbols-outlined"
+          icon="explore"
+          label="Kierunek wiatru"
+          value={windDeg != null ? `${windDeg}°` : "-"}
+        />
 
-        <div className="szczegoly-item">
-          <span className="material-symbols-outlined">cloud</span>
-          <p>Zachmurzenie</p>
-          <h5>{clouds != null ? `${clouds}%` : "-"}</h5>
-        </div>
+        <WeatherDetailItem
+          iconClass="material-symbols-outlined"
+          icon="cloud"
+          label="Zachmurzenie"
+          value={clouds != null ? `${clouds}%` : "-"}
+        />
 
-        <div className="szczegoly-item">
-          <span className="material-symbols-rounded">water_drop</span>
-          <p>Wilgotność</p>
-          <h5>{humidity != null ? `${humidity}%` : "-"}</h5>
-        </div>
+        <WeatherDetailItem
+          icon="water_drop"
+          label="Wilgotność"
+          value={humidity != null ? `${humidity}%` : "-"}
+        />
       </div>
     </div>
   );

@@ -1,15 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { buildCityWeatherUrl } from "../utils/openWeather";
 
 const SearchSection = ({ getWeatherDetails, getWeatherByCoords }) => {
-  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
-
   const favorites = useSelector((state) => state.favorites.cities);
-
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
   const [locLoading, setLocLoading] = useState(false);
-
   const formRef = useRef(null);
 
   useEffect(() => {
@@ -17,7 +14,6 @@ const SearchSection = ({ getWeatherDetails, getWeatherByCoords }) => {
       if (!formRef.current) return;
       if (!formRef.current.contains(e.target)) setOpen(false);
     };
-
     document.addEventListener("mousedown", onDocMouseDown);
     return () => document.removeEventListener("mousedown", onDocMouseDown);
   }, []);
@@ -25,21 +21,16 @@ const SearchSection = ({ getWeatherDetails, getWeatherByCoords }) => {
   const suggestions = useMemo(() => {
     if (!open) return [];
     const q = value.trim().toLowerCase();
-
-    const list = q ? favorites.filter((c) => c.toLowerCase().includes(q)) : favorites;
-
+    const list = q
+      ? favorites.filter((c) => c.toLowerCase().includes(q))
+      : favorites;
     return list.slice(0, 6);
   }, [favorites, open, value]);
 
   const runSearch = (city) => {
     const c = (city ?? "").trim();
     if (!c) return;
-
-    const API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
-      c
-    )}&appid=${API_KEY}&lang=pl`;
-
-    getWeatherDetails(API_URL, c);
+    getWeatherDetails(buildCityWeatherUrl(c), c);
   };
 
   const handleSubmit = (e) => {
@@ -56,42 +47,28 @@ const SearchSection = ({ getWeatherDetails, getWeatherByCoords }) => {
 
   const handleUseMyLocation = () => {
     if (!getWeatherByCoords) return;
-
     if (!("geolocation" in navigator)) {
       alert("Twoja przeglądarka nie obsługuje geolokalizacji.");
       return;
     }
-
     setLocLoading(true);
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-
         setOpen(false);
         setLocLoading(false);
-
-        getWeatherByCoords(lat, lon);
+        getWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
       },
       (err) => {
         setLocLoading(false);
-
-        if (err.code === 1) {
-          alert("Odmówiono dostępu do lokalizacji.");
-        } else if (err.code === 2) {
-          alert("Nie udało się ustalić lokalizacji.");
-        } else {
-          alert("Przekroczono czas oczekiwania na lokalizację.");
-        }
+        if (err.code === 1) alert("Odmówiono dostępu do lokalizacji.");
+        else if (err.code === 2) alert("Nie udało się ustalić lokalizacji.");
+        else alert("Przekroczono czas oczekiwania na lokalizację.");
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000,
-      }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   };
+  const showDropdown = open;
 
   return (
     <div className="search-section">
@@ -108,13 +85,14 @@ const SearchSection = ({ getWeatherDetails, getWeatherByCoords }) => {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          onClick={() => setOpen(true)}
           autoComplete="off"
         />
 
-        {open && favorites.length > 0 && (
+        {showDropdown && (
           <div className="suggestions">
-            {suggestions.length > 0 ? (
+            {favorites.length === 0 ? (
+              <div className="suggestion-empty">Brak ulubionych</div>
+            ) : suggestions.length > 0 ? (
               suggestions.map((city) => (
                 <button
                   key={city}
@@ -124,7 +102,9 @@ const SearchSection = ({ getWeatherDetails, getWeatherByCoords }) => {
                   title={`Wyszukaj: ${city}`}
                 >
                   <span className="suggestion-left">
-                    <span className="material-symbols-rounded suggestion-heart">favorite</span>
+                    <span className="material-symbols-rounded suggestion-heart">
+                      favorite
+                    </span>
                     {city}
                   </span>
                 </button>
