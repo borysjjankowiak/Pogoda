@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
-const SearchSection = ({ getWeatherDetails }) => {
+const SearchSection = ({ getWeatherDetails, getWeatherByCoords }) => {
   const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
   const favorites = useSelector((state) => state.favorites.cities);
 
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
+  const [locLoading, setLocLoading] = useState(false);
 
   const formRef = useRef(null);
 
@@ -25,9 +26,7 @@ const SearchSection = ({ getWeatherDetails }) => {
     if (!open) return [];
     const q = value.trim().toLowerCase();
 
-    const list = q
-      ? favorites.filter((c) => c.toLowerCase().includes(q))
-      : favorites;
+    const list = q ? favorites.filter((c) => c.toLowerCase().includes(q)) : favorites;
 
     return list.slice(0, 6);
   }, [favorites, open, value]);
@@ -55,6 +54,45 @@ const SearchSection = ({ getWeatherDetails }) => {
     runSearch(city);
   };
 
+  const handleUseMyLocation = () => {
+    if (!getWeatherByCoords) return;
+
+    if (!("geolocation" in navigator)) {
+      alert("Twoja przeglądarka nie obsługuje geolokalizacji.");
+      return;
+    }
+
+    setLocLoading(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        setOpen(false);
+        setLocLoading(false);
+
+        getWeatherByCoords(lat, lon);
+      },
+      (err) => {
+        setLocLoading(false);
+
+        if (err.code === 1) {
+          alert("Odmówiono dostępu do lokalizacji.");
+        } else if (err.code === 2) {
+          alert("Nie udało się ustalić lokalizacji.");
+        } else {
+          alert("Przekroczono czas oczekiwania na lokalizację.");
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000,
+      }
+    );
+  };
+
   return (
     <div className="search-section">
       <form className="search-form" onSubmit={handleSubmit} ref={formRef}>
@@ -74,7 +112,6 @@ const SearchSection = ({ getWeatherDetails }) => {
           autoComplete="off"
         />
 
-        {/* ✅ Sugestie z ulubionych */}
         {open && favorites.length > 0 && (
           <div className="suggestions">
             {suggestions.length > 0 ? (
@@ -99,8 +136,17 @@ const SearchSection = ({ getWeatherDetails }) => {
         )}
       </form>
 
-      <button className="location-button" type="button">
-        <span className="material-symbols-rounded">my_location</span>
+      <button
+        className="location-button"
+        type="button"
+        onClick={handleUseMyLocation}
+        disabled={locLoading || !getWeatherByCoords}
+        aria-label="Użyj mojej lokalizacji"
+        title="Użyj mojej lokalizacji"
+      >
+        <span className="material-symbols-rounded">
+          {locLoading ? "progress_activity" : "my_location"}
+        </span>
       </button>
     </div>
   );

@@ -86,6 +86,25 @@ const App = () => {
       setForecastDays([]);
     }
   };
+const getWeatherByCoords = async (lat, lon) => {
+  try {
+    setError(null);
+
+    const API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&lang=pl`;
+    const response = await fetch(API_URL);
+
+    if (!response.ok) {
+      throw new Error("Nie udało się pobrać pogody dla lokalizacji.");
+    }
+
+    const data = await response.json();
+    applyCityWeather(data);
+  } catch (err) {
+    setError(err.message);
+    setWeatherData(null);
+    setForecastDays([]);
+  }
+};
 
   useEffect(() => {
     let isCancelled = false;
@@ -184,7 +203,11 @@ const App = () => {
 
       {/* ===== KAFEL ===== */}
       <div className="container">
-        <SearchSection getWeatherDetails={getWeatherDetails} />
+      <SearchSection
+        getWeatherDetails={getWeatherDetails}
+        getWeatherByCoords={getWeatherByCoords}
+      />
+
 
         {!weatherData && (
           <FeaturedCities
