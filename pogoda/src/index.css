@@ -21,7 +21,7 @@ body {
   overflow: hidden;
   z-index: 1;
   margin: 0 auto;
-  max-width: 410px;
+  max-width: 450px;
   border-radius: 10px;
   background-color: rgba(4, 15, 22, 0.3);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -143,20 +143,107 @@ body {
   gap: 5px;
 }
 .hourly-forecast{
-  padding: 25px 25px;
+  padding: 20px 20px;
 }
 .hourly-forecast .weather-list{
   display: flex;
+  flex-wrap: nowrap;            
   justify-content: center;
   list-style: none;
-  gap: 30px;
+  gap: 25px;                   
   overflow-x: auto;
   scrollbar-width: thin;
-  padding: 0 25px 15px 25px;
+  padding: 0 20px 15px 20px;   
   margin-bottom: -15px;
   scrollbar-color: transparent transparent;
 }
 
 .hourly-forecast:hover .weather-list {
   scrollbar-color: #ffffff transparent;
+}
+.featured {
+  padding: 0 25px 25px 25px;
+}
+
+.featured-title {
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.95rem;
+  opacity: 0.9;
+  margin-bottom: 12px;
+}
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.featured-card {
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 10px;
+  padding: 12px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  transition: transform 0.08s ease, background 0.12s ease;
+}
+
+.featured-card:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.featured-card:disabled {
+  cursor: default;
+  opacity: 0.7;
+  transform: none;
+}
+
+.featured-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.featured-city {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.featured-icon {
+  width: 34px;
+  height: 34px;
+}
+
+.featured-temp {
+  font-size: 1.3rem;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.featured-sub {
+  margin-top: 2px;
+  font-size: 0.8rem;
+  opacity: 0.85;
+  text-transform: capitalize;
+}
+
+/* ===== przycisk powrotu ===== */
+.back-button {
+  margin: 0 25px;
+  margin-top: 5px;
+  margin-bottom: -5px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.back-button:hover {
+  color: #fff;
 }

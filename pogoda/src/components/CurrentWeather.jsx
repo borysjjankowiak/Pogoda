@@ -1,29 +1,5 @@
-const getWeatherIcon = (main, iconCode) => {
-  const isNight = iconCode?.includes("n");
+import { getWeatherIcon } from "../utils/weatherIcons";
 
-  switch (main) {
-    case "Clear":
-      return isNight ? "icons/clear-night.svg" : "icons/clear-day.svg";
-    case "Clouds":
-      return isNight ? "icons/cloudy-night.svg" : "icons/cloudy-day.svg";
-    case "Rain":
-      return isNight ? "icons/night-rain.svg" : "icons/day-rain.svg";
-    case "Drizzle":
-      return isNight ? "icons/night-drizzle.svg" : "icons/day-drizzle.svg";
-    case "Thunderstorm":
-      return isNight ? "icons/thunderstorms-night.svg" : "icons/thunderstorms-day.svg";
-    case "Snow":
-      return isNight ? "icons/night-snow.svg" : "icons/day-snow.svg";
-    case "Mist":
-      return "icons/mist.svg";
-    case "Fog":
-      return isNight ? "icons/fog-night.svg" : "icons/fog-day.svg";
-    case "Haze":
-      return isNight ? "icons/haze-night.svg" : "icons/haze-day.svg";
-    default:
-      return isNight ? "icons/cloudy-night.svg" : "icons/cloudy-day.svg";
-  }
-};
 
 const CurrentWeather = ({ weather }) => {
   if (!weather) return null;
@@ -33,7 +9,7 @@ const CurrentWeather = ({ weather }) => {
   const description = weather.weather?.[0]?.description ?? "";
   const iconCode = weather.weather?.[0]?.icon;
 
-  const windSpeed = weather.wind?.speed; // m/s
+  const windSpeed = weather.wind?.speed;
   const windDeg = weather.wind?.deg;
   const clouds = weather.clouds?.all;
   const humidity = weather.main?.humidity;
