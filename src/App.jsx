@@ -42,7 +42,6 @@ const App = () => {
     "icons/mist.svg",
   ];
 
-  // ✅ prognoza losowa operuje na Kelvinach (1°C różnicy = 1K różnicy)
   const generateRandomForecast = (baseTempK, daysCount = 6) => {
     const start = new Date();
     start.setHours(12, 0, 0, 0);
@@ -128,7 +127,6 @@ const getWeatherByCoords = async (lat, lon) => {
         }
         setFeaturedWeatherByCity(next);
       } catch {
-        // opcjonalnie
       }
     };
 
@@ -136,7 +134,6 @@ const getWeatherByCoords = async (lat, lon) => {
     return () => {
       isCancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSelectFeaturedCity = (city) => {
@@ -157,7 +154,6 @@ const getWeatherByCoords = async (lat, lon) => {
     setError(null);
   };
 
-  // ✅ ulubione (dla serduszka)
   const currentCity = (weatherData?.name ?? "").trim();
   const isFav =
     !!currentCity &&
@@ -165,7 +161,6 @@ const getWeatherByCoords = async (lat, lon) => {
 
   return (
     <div className="app-shell">
-      {/* ===== MENU NAD KAFELKIEM ===== */}
       <div className="top-menu">
         {weatherData && (
           <button
@@ -201,7 +196,6 @@ const getWeatherByCoords = async (lat, lon) => {
         </button>
       </div>
 
-      {/* ===== KAFEL ===== */}
       <div className="container">
       <SearchSection
         getWeatherDetails={getWeatherDetails}

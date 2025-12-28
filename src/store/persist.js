@@ -19,7 +19,10 @@ export const loadPersistedState = () => {
       unit: { unit: safeUnit },
       favorites: { cities: safeFavorites },
     };
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) {
+      console.warn("persist: nie udało się wczytać stanu", err);
+    }
     return undefined;
   }
 };
@@ -31,6 +34,9 @@ export const savePersistedState = (state) => {
       favorites: state.favorites.cities,
     };
     localStorage.setItem(KEY, JSON.stringify(payload));
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) {
+      console.warn("persist: nie udało się zapisać stanu", err);
+    }
   }
 };
