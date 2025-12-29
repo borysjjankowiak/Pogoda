@@ -8,22 +8,22 @@ Projekt korzysta z OpenWeather API do pobierania rzeczywistych danych pogodowych
 ## Funkcjonalności
 
 Aplikacja realizuje m.in.:
--ekran główny z listą przykładowych popularnych miejscowości
--szczegółowy podgląd pogody dla wybranej/wyszukanej miejscowości
-    --bieżąca temperatura
-    --warunki pogodowe w postaci ikony (dzień/noc)
-    --wiatr (prędkość+kierunek)
-    --zachmurzenie
-    --wilgotność
--wyszukiwanie miejscowości po nazwie
--możliwość pobrania miejscowości na podstawie geolokalizacji przeglądarki (działa na Chrome po udzieleniu zgód)
--globalna zmiana jednostek temperastury (C/F/K)
--ulubione miejscowości (serduszko)
-    --dodawanie i usuwanie z listy
-    --podpowiedzi z ulubionych w polu wyszukiwania
--zapis ustawień w local storage
-    --wybrana jednostka temperatury
-    --lista ulubionych miejscowości
+*ekran główny z listą przykładowych popularnych miejscowości
+*szczegółowy podgląd pogody dla wybranej/wyszukanej miejscowości
+    *bieżąca temperatura
+    *warunki pogodowe w postaci ikony (dzień/noc)
+    *wiatr (prędkość+kierunek)
+    *zachmurzenie
+    *wilgotność
+*wyszukiwanie miejscowości po nazwie
+*możliwość pobrania miejscowości na podstawie geolokalizacji przeglądarki (działa na Chrome po udzieleniu zgód)
+*globalna zmiana jednostek temperastury (C/F/K)
+*ulubione miejscowości (serduszko)
+    *dodawanie i usuwanie z listy
+    *podpowiedzi z ulubionych w polu wyszukiwania
+*zapis ustawień w local storage
+    *wybrana jednostka temperatury
+    *lista ulubionych miejscowości
 >UWAGA: Temperatura na przyszłe dni jest "losowa" na podstawie obecnej temperatury, wynika to z ograniczeń darmowego wariantu API OpenWeather
 
 ## Jak uruchomić projekt
