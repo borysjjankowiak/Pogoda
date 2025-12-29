@@ -3,7 +3,7 @@
 Repozytorium zawiera aplikację pogodową zbudowaną w technologii **Vite + React**.
 Aplikacja zawiera wymagania konieczne, dodatkowe oraz kilka innych funkcji. 
 
-Projekt korzysta z OpenWeather API do pobierania rzeczywistych danych pogodowych.
+Projekt korzysta z **OpenWeather API* do pobierania rzeczywistych danych pogodowych.
 
 ## Funkcjonalności
 
